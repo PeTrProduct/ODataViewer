@@ -70,7 +70,11 @@ namespace ODataViewer
             Point newLoac = new Point(WPFHost.Location.X + WPFHost.Size.Width + 5,
                                        WPFHost.Location.Y + 5);
             IntellisenseToolTip.Location = newLoac;
-            IntellisenseToolTip.Visible = true;
+            try // при закрытии программы с открытым IntellisenseToolTip: Ошибка при создании дескриптора окна
+            {
+                IntellisenseToolTip.Visible = true;
+            }
+            catch { }
             IntellisenseTimer.Start();
         }
 
@@ -298,7 +302,7 @@ namespace ODataViewer
 
         private void SetItellisenseLocation()
         {
-            WPFHost.Location = new Point(110 + txbQuery.Text.Length * 10, txbQuery.Location.Y + 30);
+            WPFHost.Location = new Point(120 + txbQuery.Text.Length * 10, txbQuery.Location.Y + 25);
         }
 
         private void OpenDataServiceConfigForm()
@@ -411,6 +415,7 @@ namespace ODataViewer
 
         private async void btnGo_Click(object sender, EventArgs e)
         {
+            HideIntellisense();
             await LoadData();
         }
     }

@@ -540,7 +540,7 @@
             // 
             this.IntellisenseToolTip.AutoEllipsis = true;
             this.IntellisenseToolTip.AutoSize = true;
-            this.IntellisenseToolTip.BackColor = System.Drawing.SystemColors.Info;
+            
             this.IntellisenseToolTip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.IntellisenseToolTip.CausesValidation = false;
             this.IntellisenseToolTip.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

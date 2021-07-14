@@ -13,7 +13,7 @@
         </DataTemplate>
     </UserControl.Resources>
     
-    <Border Background="#FFE5E8A3" BorderThickness="7,7,7,7" BorderBrush="#FF187A9E" CornerRadius="10,10,10,10">
+    <Border Background="#FFE5E8A3" BorderThickness="1,1,1,1" BorderBrush="#FF187A9E" CornerRadius="0,0,0,0">
         <ListBox Width="Auto" Height="Auto" IsSynchronizedWithCurrentItem="True" x:Name="lbItellisense" ItemTemplate="{DynamicResource IntellisenseItemTemplate}" FontFamily="Consolas" FontSize="14" />
     </Border>
 </UserControl>
