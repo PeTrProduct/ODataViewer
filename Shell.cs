@@ -44,8 +44,18 @@ namespace ODataViewer
             txbQuery.KeyDown += txbQuery_KeyDown;
             intellisenseWPFControl.SelectedItellisense += SelectedItellisense;
             intellisenseWPFControl.ToolTipChanged += intellisenseWPFControl_ToolTipChanged;
-            txbQuery.DataBindings.Add("Text", intellisenseWPFControl, "Prefix", false, DataSourceUpdateMode.OnPropertyChanged);
-            WPFHost.DataBindings.Add("Visible", intellisenseWPFControl, "IsVisible", false, DataSourceUpdateMode.OnPropertyChanged);
+            txbQuery.DataBindings.Add(
+                propertyName: "Text", 
+                dataSource: intellisenseWPFControl, 
+                dataMember: "Prefix", 
+                formattingEnabled: false, 
+                updateMode: DataSourceUpdateMode.OnPropertyChanged);
+            WPFHost.DataBindings.Add(
+                propertyName: "Visible", 
+                dataSource: intellisenseWPFControl, 
+                dataMember: "IsVisible", 
+                formattingEnabled: false, 
+                updateMode: DataSourceUpdateMode.OnPropertyChanged);
             HideIntellisense();
         }
 

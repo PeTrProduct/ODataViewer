@@ -141,7 +141,6 @@
     </Compile>
     <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Extensions\RecursiveEnumerableExtensions.cs" />
-    <Compile Include="Extensions\ReflectionDynamicObject.cs" />
     <Compile Include="Intellisense\IntellisenseItem.cs" />
     <Compile Include="Intellisense\IntellisenseWPFControl.xaml.cs">
       <DependentUpon>IntellisenseWPFControl.xaml</DependentUpon>
