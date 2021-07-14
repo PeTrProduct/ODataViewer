@@ -56,6 +56,8 @@ namespace ODataViewer
                 dataMember: "IsVisible", 
                 formattingEnabled: false, 
                 updateMode: DataSourceUpdateMode.OnPropertyChanged);
+
+            
             HideIntellisense();
         }
 
@@ -286,6 +288,8 @@ namespace ODataViewer
 
             intellisenseWPFControl.Start(MetaData);
             txbQuery.TextChanged += new System.EventHandler(txbQuery_TextChanged);
+
+            DrawGraph();
         }
 
         private void HideIntellisense()
@@ -346,7 +350,8 @@ namespace ODataViewer
         }
         private void tsBtnOpenWeb_Click(object sender, EventArgs e)
         {
-            Process.Start("Firefox.exe", FullPath.Replace(" ", "%20"));
+            //Process.Start("Firefox.exe", FullPath.Replace(" ", "%20"));
+            Process.Start(FullPath.Replace(" ", "%20"));
         }
         private void copyToolStripButton_Click(object sender, EventArgs e)
         {
@@ -417,6 +422,37 @@ namespace ODataViewer
         {
             HideIntellisense();
             await LoadData();
+        }
+
+        private void tab_Changed(object sender, EventArgs e)
+        {
+            if ((sender as System.Windows.Forms.TabControl).SelectedTab.Name == tabGraph.Name 
+                && graph is null)
+            {
+                DrawGraph();
+            }
+        }
+
+        private void DrawGraph()
+        {
+            graph = new Microsoft.Msagl.Drawing.Graph("graph");
+
+            foreach (KeyValuePair<string, EntitySet> kvp in MetaData.Model.EntitySets)
+            {
+                Microsoft.Msagl.Drawing.Node node = graph.AddNode(kvp.Key);
+                //node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
+            }
+
+            foreach (KeyValuePair<string, Association> kvp in MetaData.Model.AssociationSet)
+            {
+                if(kvp.Value.EndRoles.Count > 1)
+                {
+                    Microsoft.Msagl.Drawing.Edge node = graph.AddEdge(kvp.Value.EndRoles[0].Role, kvp.Value.EndRoles[1].Role);
+                    node.Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+                }
+            }
+            
+            gViewer.Graph = graph;
         }
     }
 }

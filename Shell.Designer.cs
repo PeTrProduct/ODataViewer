@@ -1,4 +1,6 @@
-﻿namespace ODataViewer
+﻿using System.Windows.Forms;
+
+namespace ODataViewer
 {
     partial class Shell
     {
@@ -43,6 +45,8 @@
             this.QureyWebBrowser = new System.Windows.Forms.WebBrowser();
             this.ResultTabPage = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tabGraph = new System.Windows.Forms.TabPage();
+            this.gViewer = new Microsoft.Msagl.GraphViewerGdi.GViewer();
             this.txbQuery = new System.Windows.Forms.TextBox();
             this.btnGo = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -90,6 +94,7 @@
             this.QureyResulttabPage.SuspendLayout();
             this.ResultTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabGraph.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -165,6 +170,7 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.MetaDataTabPage);
+            this.tabControl1.Controls.Add(this.tabGraph);
             this.tabControl1.Controls.Add(this.QureyResulttabPage);
             this.tabControl1.Controls.Add(this.ResultTabPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -174,6 +180,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(963, 546);
             this.tabControl1.TabIndex = 10;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tab_Changed);
             // 
             // MetaDataTabPage
             // 
@@ -204,7 +211,7 @@
             this.QureyResulttabPage.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.QureyResulttabPage.Name = "QureyResulttabPage";
             this.QureyResulttabPage.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.QureyResulttabPage.Size = new System.Drawing.Size(955, 429);
+            this.QureyResulttabPage.Size = new System.Drawing.Size(955, 520);
             this.QureyResulttabPage.TabIndex = 1;
             this.QureyResulttabPage.Text = "Qurey Result";
             this.QureyResulttabPage.UseVisualStyleBackColor = true;
@@ -216,7 +223,7 @@
             this.QureyWebBrowser.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.QureyWebBrowser.MinimumSize = new System.Drawing.Size(30, 31);
             this.QureyWebBrowser.Name = "QureyWebBrowser";
-            this.QureyWebBrowser.Size = new System.Drawing.Size(947, 419);
+            this.QureyWebBrowser.Size = new System.Drawing.Size(947, 510);
             this.QureyWebBrowser.TabIndex = 0;
             // 
             // ResultTabPage
@@ -225,7 +232,7 @@
             this.ResultTabPage.Location = new System.Drawing.Point(4, 22);
             this.ResultTabPage.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ResultTabPage.Name = "ResultTabPage";
-            this.ResultTabPage.Size = new System.Drawing.Size(955, 429);
+            this.ResultTabPage.Size = new System.Drawing.Size(955, 520);
             this.ResultTabPage.TabIndex = 2;
             this.ResultTabPage.Text = "Qurey Result in Grid";
             this.ResultTabPage.UseVisualStyleBackColor = true;
@@ -238,8 +245,59 @@
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(955, 429);
+            this.dataGridView1.Size = new System.Drawing.Size(955, 520);
             this.dataGridView1.TabIndex = 0;
+            // 
+            // tabGraph
+            // 
+            this.tabGraph.Controls.Add(this.gViewer);
+            this.tabGraph.Location = new System.Drawing.Point(4, 29);
+            this.tabGraph.Name = "tabGraph";
+            this.tabGraph.Padding = new System.Windows.Forms.Padding(3);
+            this.tabGraph.Size = new System.Drawing.Size(955, 513);
+            this.tabGraph.TabIndex = 3;
+            this.tabGraph.Text = "Graph";
+            this.tabGraph.UseVisualStyleBackColor = true;
+            // 
+            // gViewer
+            // 
+            this.gViewer.ArrowheadLength = 10D;
+            this.gViewer.AsyncLayout = false;
+            this.gViewer.AutoScroll = true;
+            this.gViewer.BackwardEnabled = true;
+            this.gViewer.BuildHitTree = true;
+            this.gViewer.CurrentLayoutMethod = Microsoft.Msagl.GraphViewerGdi.LayoutMethod.UseSettingsOfTheGraph;
+            this.gViewer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gViewer.EdgeInsertButtonVisible = true;
+            this.gViewer.FileName = "";
+            this.gViewer.ForwardEnabled = false;
+            this.gViewer.Graph = null;
+            this.gViewer.InsertingEdge = false;
+            this.gViewer.LayoutAlgorithmSettingsButtonVisible = true;
+            this.gViewer.LayoutEditingEnabled = true;
+            this.gViewer.Location = new System.Drawing.Point(3, 3);
+            this.gViewer.LooseOffsetForRouting = 0.25D;
+            this.gViewer.MouseHitDistance = 0.05D;
+            this.gViewer.Name = "gViewer";
+            this.gViewer.NavigationVisible = true;
+            this.gViewer.NeedToCalculateLayout = true;
+            this.gViewer.OffsetForRelaxingInRouting = 0.6D;
+            this.gViewer.PaddingForEdgeRouting = 1.5D;
+            this.gViewer.PanButtonPressed = false;
+            this.gViewer.SaveAsImageEnabled = true;
+            this.gViewer.SaveAsMsaglEnabled = true;
+            this.gViewer.SaveButtonVisible = true;
+            this.gViewer.SaveGraphButtonVisible = true;
+            this.gViewer.SaveInVectorFormatEnabled = true;
+            this.gViewer.Size = new System.Drawing.Size(949, 507);
+            this.gViewer.TabIndex = 0;
+            this.gViewer.TightOffsetForRouting = 0.125D;
+            this.gViewer.ToolBarIsVisible = true;
+            this.gViewer.Transform = ((Microsoft.Msagl.Core.Geometry.Curves.PlaneTransformation)(resources.GetObject("gViewer.Transform")));
+            this.gViewer.UndoRedoButtonsVisible = true;
+            this.gViewer.WindowZoomButtonPressed = false;
+            this.gViewer.ZoomF = 25.368421052631579D;
+            this.gViewer.ZoomWindowThreshold = 0.05D;
             // 
             // txbQuery
             // 
@@ -540,7 +598,6 @@
             // 
             this.IntellisenseToolTip.AutoEllipsis = true;
             this.IntellisenseToolTip.AutoSize = true;
-            
             this.IntellisenseToolTip.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.IntellisenseToolTip.CausesValidation = false;
             this.IntellisenseToolTip.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -598,6 +655,7 @@
             this.QureyResulttabPage.ResumeLayout(false);
             this.ResultTabPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabGraph.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
@@ -651,6 +709,8 @@
         private System.Windows.Forms.ToolStripButton tsBtnOpenWeb;
         private System.Windows.Forms.TabPage ResultTabPage;
         private System.Windows.Forms.DataGridView dataGridView1;
+        private Microsoft.Msagl.GraphViewerGdi.GViewer gViewer;
+        private Microsoft.Msagl.Drawing.Graph graph;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.Integration.ElementHost WPFHost;
         private IntellisenseWPFControl intellisenseWPFControl;
@@ -661,5 +721,6 @@
         private System.Windows.Forms.ToolStripMenuItem collapseToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton btnShowMetadataTree;
         private System.Windows.Forms.SplitContainer mainSplitContainer;
+        private System.Windows.Forms.TabPage tabGraph;
     }
 }

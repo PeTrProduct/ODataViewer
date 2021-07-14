@@ -184,18 +184,12 @@ namespace ODataViewer
 
         private void OnSelectedItellisense(string intellisens)
         {
-            if (SelectedItellisense != null)
-            {
-                SelectedItellisense(this, new IntellisenseEventArgs(intellisens));
-            }
+            SelectedItellisense?.Invoke(this, new IntellisenseEventArgs(intellisens));
         }
 
         private void OnToolTipChanged(string tp)
         {
-            if (ToolTipChanged != null)
-            {
-                ToolTipChanged(this, new IntellisenseEventArgs(tp));
-            }
+            ToolTipChanged?.Invoke(this, new IntellisenseEventArgs(tp));
         }
 
         private void lbItellisense_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)

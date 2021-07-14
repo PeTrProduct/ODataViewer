@@ -59,8 +59,6 @@ namespace ODataViewer
         {
             if (XmlDoc.Root != null)
             {
-                //string xml = XmlDoc.ToString();
-                //IEnumerable<XElement> query = XmlDoc.Root.Elements("EntityContainer");
                 IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants().Where(d => d.Name.LocalName == "EntityContainer");
                 //IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants(EDMNS + "EntityContainer");
                 if (entityContainer != null && entityContainer.Count() > 0)
