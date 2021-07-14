@@ -45,19 +45,19 @@ namespace ODataViewer
             intellisenseWPFControl.SelectedItellisense += SelectedItellisense;
             intellisenseWPFControl.ToolTipChanged += intellisenseWPFControl_ToolTipChanged;
             txbQuery.DataBindings.Add(
-                propertyName: "Text", 
-                dataSource: intellisenseWPFControl, 
-                dataMember: "Prefix", 
-                formattingEnabled: false, 
+                propertyName: "Text",
+                dataSource: intellisenseWPFControl,
+                dataMember: "Prefix",
+                formattingEnabled: false,
                 updateMode: DataSourceUpdateMode.OnPropertyChanged);
             WPFHost.DataBindings.Add(
-                propertyName: "Visible", 
-                dataSource: intellisenseWPFControl, 
-                dataMember: "IsVisible", 
-                formattingEnabled: false, 
+                propertyName: "Visible",
+                dataSource: intellisenseWPFControl,
+                dataMember: "IsVisible",
+                formattingEnabled: false,
                 updateMode: DataSourceUpdateMode.OnPropertyChanged);
 
-            
+
             HideIntellisense();
         }
 
@@ -193,31 +193,47 @@ namespace ODataViewer
             JsonDocument result = JsonDocument.Parse(content);
             JsonElement root = result.RootElement;
 
-            
+
             if (root.TryGetProperty("value", out JsonElement value) && value.ValueKind == JsonValueKind.Array)
             {
                 JsonElement.ArrayEnumerator values = value.EnumerateArray();
                 #region Build DataTable Columns
 
-                foreach ((string, JsonElement) prop in (IEnumerable<(string, JsonElement)>)values.First().DescendantPropertyValues())
+                HashSet<string> columns = new HashSet<string>();
+
+                foreach (JsonElement obj in values)
                 {
-                    dt.Columns.Add(prop.Item1);
+                    IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
+                    foreach ((string, JsonElement) prop in props)
+                    {
+                        if (!string.IsNullOrEmpty(prop.Item1))
+                        {
+                            columns.Add(prop.Item1);
+                        }
+                    }
+                }
+
+                foreach (string col in columns)
+                {
+                    dt.Columns.Add(col);
                 }
                 #endregion 
 
                 #region Insert Data to DataTable
                 foreach (JsonElement obj in values)
                 {
-                    List<string> colms = new List<string>();
+                    DataRow workRow = dt.NewRow();
 
                     IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
                     foreach ((string, JsonElement) prop in props)
                     {
-                        colms.Add(prop.Item2.ToString());
                         //var value_type = prop.Item2.ValueKind.ToString();
-                        //var name = prop.Item1;
+                        if (!string.IsNullOrEmpty(prop.Item1))
+                        {
+                            workRow[prop.Item1] = prop.Item2.ToString();
+                        }
                     }
-                    dt.LoadDataRow(colms.ToArray(), true);
+                    dt.Rows.Add(workRow);
                 }
                 #endregion 
             }
@@ -321,7 +337,7 @@ namespace ODataViewer
                 dscf.ShowDialog();
                 ServicePath = dscf.ServicePath;
             }
-            
+
             if (ServicePath.EndsWith("/$metadata", StringComparison.OrdinalIgnoreCase))
             {
                 ServicePath = ServicePath.Replace("/$metadata", "");
@@ -334,7 +350,7 @@ namespace ODataViewer
 
             Show();
 
-            
+
             string metadata = string.Format("{0}/$metadata", ServicePath);
 
             webBrowser.Navigate(metadata);
@@ -426,7 +442,7 @@ namespace ODataViewer
 
         private void tab_Changed(object sender, EventArgs e)
         {
-            if ((sender as System.Windows.Forms.TabControl).SelectedTab.Name == tabGraph.Name 
+            if ((sender as System.Windows.Forms.TabControl).SelectedTab.Name == tabGraph.Name
                 && graph is null)
             {
                 DrawGraph();
@@ -445,13 +461,13 @@ namespace ODataViewer
 
             foreach (KeyValuePair<string, Association> kvp in MetaData.Model.AssociationSet)
             {
-                if(kvp.Value.EndRoles.Count > 1)
+                if (kvp.Value.EndRoles.Count > 1)
                 {
                     Microsoft.Msagl.Drawing.Edge node = graph.AddEdge(kvp.Value.EndRoles[0].Role, kvp.Value.EndRoles[1].Role);
                     node.Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
                 }
             }
-            
+
             gViewer.Graph = graph;
         }
     }
