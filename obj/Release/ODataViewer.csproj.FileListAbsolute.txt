@@ -1,0 +1,17 @@
+C:\TMP\OData\ODataViewer\ODataViewer\bin\Release\ODataViewer.exe.config
+C:\TMP\OData\ODataViewer\ODataViewer\bin\Release\ODataViewer.exe
+C:\TMP\OData\ODataViewer\ODataViewer\bin\Release\ODataViewer.pdb
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.csproj.AssemblyReference.cache
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\Intellisense\IntellisenseWPFControl.baml
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\Intellisense\IntellisenseWPFControl.g.cs
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer_Content.g.cs
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer_MarkupCompile.cache
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.g.resources
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\E4D.About.resources
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\DataServicesViewer.DataServiceConfigForm.resources
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.Properties.Resources.resources
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\DataServicesViewer.Shell.resources
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.csproj.GenerateResource.cache
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.csproj.CoreCompileInputs.cache
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.exe
+C:\TMP\OData\ODataViewer\ODataViewer\obj\Release\ODataViewer.pdb

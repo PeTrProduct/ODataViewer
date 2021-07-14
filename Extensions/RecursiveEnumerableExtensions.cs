@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace ODataViewer
+{
+    public static partial class RecursiveEnumerableExtensions
+    {
+        // Rewritten from the answer by Eric Lippert https://stackoverflow.com/users/88656/eric-lippert
+        // to "Efficient graph traversal with LINQ - eliminating recursion" https://stackoverflow.com/questions/10253161/efficient-graph-traversal-with-linq-eliminating-recursion
+        // to ensure items are returned in the order they are encountered.
+        public static IEnumerable<T> Traverse<T>(
+            T root,
+            Func<T, IEnumerable<T>> children, bool includeSelf = true)
+        {
+            if (includeSelf)
+            {
+                yield return root;
+            }
+
+            Stack<IEnumerator<T>> stack = new Stack<IEnumerator<T>>();
+            try
+            {
+                stack.Push(children(root).GetEnumerator());
+                while (stack.Count != 0)
+                {
+                    IEnumerator<T> enumerator = stack.Peek();
+                    if (!enumerator.MoveNext())
+                    {
+                        stack.Pop();
+                        enumerator.Dispose();
+                    }
+                    else
+                    {
+                        yield return enumerator.Current;
+                        stack.Push(children(enumerator.Current).GetEnumerator());
+                    }
+                }
+            }
+            finally
+            {
+                foreach (IEnumerator<T> enumerator in stack)
+                {
+                    enumerator.Dispose();
+                }
+            }
+        }
+    }
+}
