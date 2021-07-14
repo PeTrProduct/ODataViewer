@@ -364,4 +364,9 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Visual Studio
-.vs/
+*.suo
+*.user
+_ReSharper.*
+bin
+obj
+packages
