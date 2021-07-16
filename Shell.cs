@@ -150,7 +150,7 @@ namespace ODataViewer
 
         private async Task LoadData()
         {
-            QureyWebBrowser.Navigate(FullPath);
+            //QureyWebBrowser.Navigate(FullPath);
             tabControl1.SelectedTab = tabControl1.TabPages[1];
 
             try
@@ -172,7 +172,7 @@ namespace ODataViewer
                 if (!(dt is null))
                 {
                     dataGridView1.DataSource = dt;
-                    tabControl1.SelectedTab = tabControl1.TabPages[2];
+                    tabControl1.SelectedTab = tabControl1.TabPages[3];
                 }
                 else
                 {
@@ -457,6 +457,10 @@ namespace ODataViewer
                 && graph is null)
             {
                 DrawGraph();
+            }
+            else if((sender as System.Windows.Forms.TabControl).SelectedTab.Name == QureyResulttabPage.Name)
+            {
+                QureyWebBrowser.Navigate(FullPath);
             }
         }
 
