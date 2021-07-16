@@ -196,51 +196,62 @@ namespace ODataViewer
 
             if (root.TryGetProperty("value", out JsonElement value) && value.ValueKind == JsonValueKind.Array)
             {
-                JsonElement.ArrayEnumerator values = value.EnumerateArray();
-                #region Build DataTable Columns
-
-                HashSet<string> columns = new HashSet<string>();
-
-                foreach (JsonElement obj in values)
+                ExtractJsonValuesDataTable(dt, value);
+            }
+            else if (root.TryGetProperty("error", out JsonElement error))
+            {
+                if (error.TryGetProperty("message", out JsonElement message))
                 {
-                    IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
-                    foreach ((string, JsonElement) prop in props)
-                    {
-                        if (!string.IsNullOrEmpty(prop.Item1))
-                        {
-                            columns.Add(prop.Item1);
-                        }
-                    }
+                    MessageBox.Show(message.ToString(), "OData ERROR:");
                 }
-
-                foreach (string col in columns)
-                {
-                    dt.Columns.Add(col);
-                }
-                #endregion 
-
-                #region Insert Data to DataTable
-                foreach (JsonElement obj in values)
-                {
-                    DataRow workRow = dt.NewRow();
-
-                    IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
-                    foreach ((string, JsonElement) prop in props)
-                    {
-                        //var value_type = prop.Item2.ValueKind.ToString();
-                        if (!string.IsNullOrEmpty(prop.Item1))
-                        {
-                            workRow[prop.Item1] = prop.Item2.ToString();
-                        }
-                    }
-                    dt.Rows.Add(workRow);
-                }
-                #endregion 
             }
 
             return dt;
         }
 
+        private static void ExtractJsonValuesDataTable(DataTable dt, JsonElement value)
+        {
+            JsonElement.ArrayEnumerator values = value.EnumerateArray();
+            #region Build DataTable Columns
+
+            HashSet<string> columns = new HashSet<string>();
+
+            foreach (JsonElement obj in values)
+            {
+                IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
+                foreach ((string, JsonElement) prop in props)
+                {
+                    if (!string.IsNullOrEmpty(prop.Item1))
+                    {
+                        columns.Add(prop.Item1);
+                    }
+                }
+            }
+
+            foreach (string col in columns)
+            {
+                dt.Columns.Add(col);
+            }
+            #endregion
+
+            #region Insert Data to DataTable
+            foreach (JsonElement obj in values)
+            {
+                DataRow workRow = dt.NewRow();
+
+                IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
+                foreach ((string, JsonElement) prop in props)
+                {
+                    //var value_type = prop.Item2.ValueKind.ToString();
+                    if (!string.IsNullOrEmpty(prop.Item1))
+                    {
+                        workRow[prop.Item1] = prop.Item2.ToString();
+                    }
+                }
+                dt.Rows.Add(workRow);
+            }
+            #endregion
+        }
 
         private DataTable PopulateDataTableFromXML(string xmlString)
         {
@@ -451,6 +462,10 @@ namespace ODataViewer
 
         private void DrawGraph()
         {
+            if (gViewer.Graph != null)
+            {
+                gViewer.Graph = null;
+            }
             graph = new Microsoft.Msagl.Drawing.Graph("graph");
 
             foreach (KeyValuePair<string, EntitySet> kvp in MetaData.Model.EntitySets)
