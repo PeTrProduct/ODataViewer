@@ -155,28 +155,30 @@ namespace ODataViewer
 
             try
             {
-                HttpResponseMessage response = await httpClient.GetAsync(new Uri(FullPath));
-                string contentType = response.Content.Headers.ContentType.MediaType;
-                string content = await response.Content.ReadAsStringAsync();
+                using (HttpResponseMessage response = await httpClient.GetAsync(new Uri(FullPath)))
+                {
+                    string contentType = response.Content.Headers.ContentType.MediaType;
+                    string content = await response.Content.ReadAsStringAsync();
 
-                DataTable dt = null;
-                if (contentType.IndexOf("xml", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    dt = PopulateDataTableFromXML(content);
-                }
-                else if (contentType.IndexOf("json", StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    dt = PopulateDataTableFromJSON(content);
-                }
+                    DataTable dt = null;
+                    if (contentType.IndexOf("xml", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        dt = PopulateDataTableFromXML(content);
+                    }
+                    else if (contentType.IndexOf("json", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        dt = PopulateDataTableFromJSON(content);
+                    }
 
-                if (!(dt is null))
-                {
-                    dataGridView1.DataSource = dt;
-                    tabControl1.SelectedTab = tabControl1.TabPages[3];
-                }
-                else
-                {
-                    MessageBox.Show("NO DATA FOUND");
+                    if (!(dt is null))
+                    {
+                        dataGridView1.DataSource = dt;
+                        tabControl1.SelectedTab = tabControl1.TabPages[3];
+                    }
+                    else
+                    {
+                        MessageBox.Show("NO DATA FOUND");
+                    }
                 }
 
             }
@@ -202,7 +204,7 @@ namespace ODataViewer
                 }
                 else if (value.ValueKind == JsonValueKind.String) // primitive value
                 {
-                    ExtractStringValuesDataTable(dt, value);
+                    ExtractPrimitiveValueDataTable(dt, value);
                 }
             }
             else if (root.TryGetProperty("error", out JsonElement error))
@@ -212,11 +214,47 @@ namespace ODataViewer
                     MessageBox.Show(message.ToString(), "OData ERROR:");
                 }
             }
+            else if (root.ValueKind == JsonValueKind.Object)
+            {
+                ExtractComplexValueDataTable(dt, root); // complex value
+            }
 
             return dt;
         }
 
-        private void ExtractStringValuesDataTable(DataTable dt, JsonElement value)
+        /// <summary>
+        /// Extract complex value
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="value"></param>
+        private void ExtractComplexValueDataTable(DataTable dt, JsonElement value)
+        {
+            IEnumerable<(string, JsonElement)> props = value.DescendantPropertyValues();
+            foreach ((string, JsonElement) prop in props)
+            {
+                if (!string.IsNullOrEmpty(prop.Item1) && prop.Item1 != "@odata.context")
+                {
+                    dt.Columns.Add(prop.Item1);
+                }
+            }
+
+            DataRow workRow = dt.NewRow();
+            foreach ((string, JsonElement) prop in props)
+            {
+                if (!string.IsNullOrEmpty(prop.Item1) && prop.Item1 != "@odata.context")
+                {
+                    workRow[prop.Item1] = prop.Item2.ToString();
+                }
+            }
+            dt.Rows.Add(workRow);
+        }
+
+        /// <summary>
+        /// Extract primitive value
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="value"></param>
+        private void ExtractPrimitiveValueDataTable(DataTable dt, JsonElement value)
         {
             string column_name = "String";
             dt.Columns.Add("String");
@@ -225,16 +263,21 @@ namespace ODataViewer
             dt.Rows.Add(workRow);
         }
 
-        private static void ExtractJsonValuesDataTable(DataTable dt, JsonElement value)
+        /// <summary>
+        /// Extract collection of complex values
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="element"></param>
+        private static void ExtractJsonValuesDataTable(DataTable dt, JsonElement element)
         {
-            JsonElement.ArrayEnumerator values = value.EnumerateArray();
+            JsonElement.ArrayEnumerator values = element.EnumerateArray();
             #region Build DataTable Columns
 
             HashSet<string> columns = new HashSet<string>();
 
-            foreach (JsonElement obj in values)
+            foreach (JsonElement value in values)
             {
-                IEnumerable<(string, JsonElement)> props = obj.DescendantPropertyValues();
+                IEnumerable<(string, JsonElement)> props = value.DescendantPropertyValues();
                 foreach ((string, JsonElement) prop in props)
                 {
                     if (!string.IsNullOrEmpty(prop.Item1))
