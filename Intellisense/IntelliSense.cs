@@ -344,8 +344,6 @@ namespace ODataViewer
 
                 if (lastExp.Trim().StartsWith("$select="))
                 {
-                    string prop = lastExp.Split('=').Last();
-
                     result.AddRange(PropertiesIntellisense(et, lastExp.Split('=',',').Last()));
                 }
                 else

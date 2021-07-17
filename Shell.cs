@@ -169,6 +169,10 @@ namespace ODataViewer
                     {
                         dt = PopulateDataTableFromJSON(content);
                     }
+                    else if (contentType.IndexOf("plain", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        dt = PopulateDataTableFromText(content);
+                    }
 
                     if (!(dt is null))
                     {
@@ -186,6 +190,17 @@ namespace ODataViewer
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private DataTable PopulateDataTableFromText(string content)
+        {
+            DataTable dt = new DataTable();
+            string column_name = "Plain Text";
+            dt.Columns.Add(column_name);
+            DataRow workRow = dt.NewRow();
+            workRow[column_name] = content;
+            dt.Rows.Add(workRow);
+            return dt;
         }
 
         private DataTable PopulateDataTableFromJSON(string content)
@@ -256,8 +271,8 @@ namespace ODataViewer
         /// <param name="value"></param>
         private void ExtractPrimitiveValueDataTable(DataTable dt, JsonElement value)
         {
-            string column_name = "String";
-            dt.Columns.Add("String");
+            string column_name = "String value";
+            dt.Columns.Add(column_name);
             DataRow workRow = dt.NewRow();
             workRow[column_name] = value.GetString();
             dt.Rows.Add(workRow);
