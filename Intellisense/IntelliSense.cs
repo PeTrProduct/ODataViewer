@@ -335,9 +335,23 @@ namespace ODataViewer
                 {
                     result.Add(new IntellisenseItem("$orderby=", DSType.Operation, "Sort the results by the criteria given in this value."));
                 }
+            }
+            #endregion
 
+            #region $select
+            if (IsEntitySet && "$select=".StartsWith(lastOperation, StringComparison.CurrentCultureIgnoreCase))
+            {
 
+                if (lastExp.Trim().StartsWith("$select="))
+                {
+                    string prop = lastExp.Split('=').Last();
 
+                    result.AddRange(PropertiesIntellisense(et, lastExp.Split('=',',').Last()));
+                }
+                else
+                {
+                    result.Add(new IntellisenseItem("$select=", DSType.Operation, "Selects a subset of properties to include in the response."));
+                }
             }
             #endregion
 
