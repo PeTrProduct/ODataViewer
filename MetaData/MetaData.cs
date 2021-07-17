@@ -78,8 +78,8 @@ namespace ODataViewer
                 Model.EntitySets.Add(
                     item.Attribute("Name").Value,
                     new EntitySet(
-                        item.Attribute("Name").Value,
-                        item.Attribute("EntityType").Value));
+                        name: item.Attribute("Name").Value,
+                        entityType: item.Attribute("EntityType").Value));
             }
             BuildAssociationSet();
             BuildEntities();
@@ -114,6 +114,11 @@ namespace ODataViewer
         private void BuildEntities()
         {
             Dictionary<string, XElement> EntityTypes = new Dictionary<string, XElement>();
+            Dictionary<string, XElement> EntitySets = new Dictionary<string, XElement>();
+
+            IEnumerable<XElement> items = XmlDoc.Root.Descendants(EDMNS + "EntitySet");
+            //
+
             foreach (XElement schema in XmlDoc.Root.Descendants(EDMNS + "Schema"))
             {
                 string ns = schema.Attribute("Namespace").Value;
@@ -121,15 +126,27 @@ namespace ODataViewer
                 {
                     EntityTypes.Add(ns + "." + et.Attribute("Name").Value, et);
                 }
+
+                foreach (XElement et in XmlDoc.Root.Descendants(EDMNS + "EntitySet"))
+                {
+                    if (EntitySets.ContainsKey(et.Attribute("Name").Value) == false)
+                    {
+                        EntitySets.Add(et.Attribute("Name").Value, et);
+                    }
+                }
             }
 
             foreach (EntitySet item in Model.EntitySets.Values)
             {
                 XElement xe = EntityTypes[item.NameType];
+                XElement se = EntitySets[item.Name];
 
                 BuildEntityKeys(item.Entity, xe);
                 BuildEntityProperties(item.Entity, xe);
-                BuildEntityNavigationProperties(item.Entity, xe);
+                BuildEntityNavigationProperties(
+                    entitySet: item,
+                    xSetElement: se,
+                    xElement: xe);
             }
 
             if (ReadCompleted != null)
@@ -172,28 +189,37 @@ namespace ODataViewer
             }
         }
 
-        private void BuildEntityNavigationProperties(Entity e, XElement xe)
+        private void BuildEntityNavigationProperties(EntitySet entitySet, XElement xSetElement, XElement xElement)
         {
+            Entity entity = entitySet.Entity;
+
             string FromRole;
             string ToRole;
             string Relationship;
             string KeyNav;
 
-            foreach (XElement navi in xe.Elements(EDMNS + "NavigationProperty"))
+            string Target;
+            string Path;
+
+            string elementName = xElement.Attribute("Name").Value;
+
+            foreach (XElement navi in xElement.Elements(EDMNS + "NavigationProperty"))
             {
                 KeyNav = navi.Attribute("Name").Value;
-                FromRole = navi.Attribute("FromRole").Value;
-                ToRole = navi.Attribute("ToRole").Value;
-                Relationship = navi.Attribute("Relationship").Value; //.Split('.').Last();
+                FromRole = navi.Attribute("FromRole")?.Value;
+                ToRole = navi.Attribute("ToRole")?.Value;
+                Relationship = navi.Attribute("Relationship")?.Value; //.Split('.').Last();
 
-                Association ass = Model.AssociationSet[Relationship];
+                if (!string.IsNullOrEmpty(Relationship) && !string.IsNullOrEmpty(ToRole) && !string.IsNullOrEmpty(FromRole))
+                {
+                    Association ass = Model.AssociationSet[Relationship];
 
-                string es = (from x in ass.EndRoles
-                             where x.Role == ToRole
-                             select x.EntitySet).First();
+                    string es = (from x in ass.EndRoles
+                                 where x.Role == ToRole
+                                 select x.EntitySet).First();
 
-                e.NavigationProperties.Add(KeyNav, Model.EntitySets[es].Entity);
-
+                    entity.NavigationProperties.Add(KeyNav, Model.EntitySets[es].Entity);
+                }
 
                 //if ( model.EntitySets.ContainsKey( ToRole ) )
                 //    e.NavigationProperties.Add( 
@@ -203,6 +229,18 @@ namespace ODataViewer
                 //    e.NavigationProperties.Add(
                 //        navi.Attribute("Name").Value, null );
                 //}
+            }
+
+            foreach (XElement navi in xSetElement.Elements(EDMNS + "NavigationPropertyBinding"))
+            {
+                Target = navi.Attribute("Target").Value;
+                Path = navi.Attribute("Path").Value;
+
+                if (entity.NavigationProperties.ContainsKey(Target) == false 
+                    && Model.EntitySets.ContainsKey(Target))
+                {
+                    entity.NavigationProperties.Add(Target, Model.EntitySets[Target].Entity);
+                }
             }
         }
     }
