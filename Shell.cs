@@ -194,9 +194,16 @@ namespace ODataViewer
             JsonElement root = result.RootElement;
 
 
-            if (root.TryGetProperty("value", out JsonElement value) && value.ValueKind == JsonValueKind.Array)
+            if (root.TryGetProperty("value", out JsonElement value))
             {
-                ExtractJsonValuesDataTable(dt, value);
+                if (value.ValueKind == JsonValueKind.Array) // collection of complex values
+                {
+                    ExtractJsonValuesDataTable(dt, value);
+                }
+                else if (value.ValueKind == JsonValueKind.String) // primitive value
+                {
+                    ExtractStringValuesDataTable(dt, value);
+                }
             }
             else if (root.TryGetProperty("error", out JsonElement error))
             {
@@ -207,6 +214,15 @@ namespace ODataViewer
             }
 
             return dt;
+        }
+
+        private void ExtractStringValuesDataTable(DataTable dt, JsonElement value)
+        {
+            string column_name = "String";
+            dt.Columns.Add("String");
+            DataRow workRow = dt.NewRow();
+            workRow[column_name] = value.GetString();
+            dt.Rows.Add(workRow);
         }
 
         private static void ExtractJsonValuesDataTable(DataTable dt, JsonElement value)
