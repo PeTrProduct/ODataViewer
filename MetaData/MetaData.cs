@@ -220,28 +220,33 @@ namespace ODataViewer
 
                     entity.NavigationProperties.Add(KeyNav, Model.EntitySets[es].Entity);
                 }
+                else
+                {
+                    entity.NavigationProperties.Add(
+                        navi.Attribute("Name").Value, null);
+                }
 
                 //if ( model.EntitySets.ContainsKey( ToRole ) )
-                //    e.NavigationProperties.Add( 
+                //    entity.NavigationProperties.Add( 
                 //        navi.Attribute("Name").Value , model.EntitySets[ToRole].Entity );
                 //else
                 //{
-                //    e.NavigationProperties.Add(
+                //    entity.NavigationProperties.Add(
                 //        navi.Attribute("Name").Value, null );
                 //}
             }
 
-            foreach (XElement navi in xSetElement.Elements(EDMNS + "NavigationPropertyBinding"))
-            {
-                Target = navi.Attribute("Target").Value;
-                Path = navi.Attribute("Path").Value;
+            //foreach (XElement navi in xSetElement.Elements(EDMNS + "NavigationPropertyBinding"))
+            //{
+            //    Target = navi.Attribute("Target").Value;
+            //    Path = navi.Attribute("Path").Value;
 
-                if (entity.NavigationProperties.ContainsKey(Target) == false 
-                    && Model.EntitySets.ContainsKey(Target))
-                {
-                    entity.NavigationProperties.Add(Target, Model.EntitySets[Target].Entity);
-                }
-            }
+            //    if (entity.NavigationProperties.ContainsKey(Target) == false 
+            //        && Model.EntitySets.ContainsKey(Target))
+            //    {
+            //        entity.NavigationProperties.Add(Target, Model.EntitySets[Target].Entity);
+            //    }
+            //}
         }
     }
 }
