@@ -157,6 +157,11 @@ namespace ODataViewer
             {
                 using (HttpResponseMessage response = await httpClient.GetAsync(new Uri(FullPath)))
                 {
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        MessageBox.Show(response.StatusCode.ToString());
+                        return;
+                    }
                     string contentType = response.Content.Headers.ContentType.MediaType;
                     string content = await response.Content.ReadAsStringAsync();
 
