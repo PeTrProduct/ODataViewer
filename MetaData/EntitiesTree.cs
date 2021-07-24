@@ -23,7 +23,8 @@ namespace ODataViewer
 
             foreach (EntitySet item in metaData.Model.EntitySets.Values)
             {
-                entitySet.Nodes.Add(item.NameType).BuildEntity(item.Entity);
+                // entitySet.Nodes.Add(item.NameType).BuildEntity(item.Entity);
+                entitySet.Nodes.Add(item.Name).BuildEntity(item.Entity);
             }
             source.EndUpdate();
         }

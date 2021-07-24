@@ -4,21 +4,15 @@ namespace ODataViewer
 {
     public class EntitySet : EDMElement
     {
-        public Entity Entity { get; }
-
-        public EntitySet()
-        {
-            Entities = new Dictionary<string, Entity>();
-            Entity = new Entity();
-        }
-        public EntitySet(string name, string entityType) : this()
+        public EntitySet(string name, Entity entity)
         {
             Name = name;
-            NameType = entityType;//.Split('.').Last();
-            Entity.NameType = NameType;
-            Entity.Name = NameType;
+            NameType = entity.NameType;
+            Entity = entity;
         }
 
-        public Dictionary<string, Entity> Entities { get; set; }
+        public Entity Entity { get; }
+
+        //public Dictionary<string, Entity> Entities { get; set; } = new Dictionary<string, Entity>();
     }
 }

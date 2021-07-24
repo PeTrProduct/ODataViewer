@@ -4,13 +4,8 @@ namespace ODataViewer
 {
     public class EntityContainer : EDMElement
     {
-        public EntityContainer()
-        {
-            EntitySets = new Dictionary<string, EntitySet>();
-            AssociationSet = new Dictionary<string, Association>();
-        }
-
-        public Dictionary<string, EntitySet> EntitySets { get; set; }
-        public Dictionary<string, Association> AssociationSet { get; set; }
+        public Dictionary<string, Entity> Entities { get; set; } = new Dictionary<string, Entity>();
+        public Dictionary<string, EntitySet> EntitySets { get; set; } = new Dictionary<string, EntitySet>();
+        public Dictionary<string, Association> AssociationSet { get; set; } = new Dictionary<string, Association>();
     }
 }

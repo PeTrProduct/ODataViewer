@@ -19,8 +19,8 @@ namespace ODataViewer
         private readonly WebClient proxy;
         private XDocument XmlDoc;
 
-        private readonly Dictionary<string, XElement> EntityTypes = new Dictionary<string, XElement>();
-        private readonly Dictionary<string, XElement> EntitySets = new Dictionary<string, XElement>();
+        private readonly Dictionary<string, XElement> entityTypes = new Dictionary<string, XElement>();
+        private readonly Dictionary<string, XElement> entitySets = new Dictionary<string, XElement>();
 
         public event EventHandler ReadCompleted;
 
@@ -44,36 +44,59 @@ namespace ODataViewer
 
         private void proxy_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
         {
-            try
+            //try
+            //{
+            using (StreamReader sr = new StreamReader(e.Result))
             {
-                using (StreamReader sr = new StreamReader(e.Result))
-                {
-                    XmlDoc = XDocument.Parse(sr.ReadToEnd());
-                }
-                BuildModel();
+                XmlDoc = XDocument.Parse(sr.ReadToEnd());
             }
-            catch (Exception err)
-            {
-                MessageBox.Show(err.Message);
-            }
+            BuildModel();
+            //}
+            //catch (Exception err)
+            //{
+            //    MessageBox.Show(err.Message);
+            //}
         }
 
         private void BuildModel()
         {
-            if (XmlDoc.Root != null)
+            if (XmlDoc.Root == null)
             {
-                IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants().Where(d => d.Name.LocalName == "EntityContainer");
-                //IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants(EDMNS + "EntityContainer");
-                if (entityContainer != null && entityContainer.Count() > 0)
+                MessageBox.Show("BAD DOCUMENT");
+                return;
+            }
+
+            IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants().Where(d => d.Name.LocalName == "EntityContainer");
+            //IEnumerable<XElement> entityContainer = XmlDoc.Root.Descendants(EDMNS + "EntityContainer");
+            if (entityContainer != null && entityContainer.Count() > 0)
+            {
+                EDMNS = entityContainer.First().Name.Namespace;
+                Model.Name = entityContainer.First().Attribute("Name").Value;
+            }
+
+
+            foreach (XElement schema in XmlDoc.Root.Descendants(EDMNS + "Schema"))
+            {
+                string ns = schema.Attribute("Namespace").Value;
+                foreach (XElement et in schema.Descendants(EDMNS + "EntityType"))
                 {
-                    EDMNS = entityContainer.First().Name.Namespace;
-                    Model.Name = entityContainer.First().Attribute("Name").Value;
+                    entityTypes.Add(ns + "." + et.Attribute("Name").Value, et);
+                }
+
+                foreach (XElement et in XmlDoc.Root.Descendants(EDMNS + "EntitySet"))
+                {
+                    string name = et.Attribute("Name").Value; //  ns + "." + et.Attribute("Name").Value;
+                    if (entitySets.ContainsKey(name) == false)
+                    {
+                        entitySets.Add(name, et);
+                    }
                 }
             }
 
+            BuildEntities();
             BuildEntitySets();
             BuildAssociationSet();
-            BuildEntities();
+            BuildEntitySetsEntities();
 
             if (ReadCompleted != null)
             {
@@ -81,15 +104,43 @@ namespace ODataViewer
             }
         }
 
+        private void BuildEntities()
+        {
+            foreach (KeyValuePair<string, XElement> kvp in entityTypes)
+            {
+                var item = kvp.Value;
+                string name = item.Attribute("Name").Value;
+                string entityType = kvp.Key; //item.Attribute("EntityType")?.Value;
+                string baseType = item.Attribute("BaseType")?.Value;
+
+                Entity entity = new Entity()
+                {
+                    Name = name,
+                    NameType = entityType,
+                    BaseType = baseType
+                };
+                Model.Entities.Add(entityType, entity);
+            }
+        }
+
         private void BuildEntitySets()
         {
-            foreach (XElement item in XmlDoc.Root.Descendants(EDMNS + "EntitySet"))
+            foreach (KeyValuePair<string, XElement> kvp in entitySets)
             {
-                Model.EntitySets.Add(
-                    item.Attribute("Name").Value,
-                    new EntitySet(
-                        name: item.Attribute("Name").Value,
-                        entityType: item.Attribute("EntityType").Value));
+                XElement item = kvp.Value;
+                if (Model.Entities.TryGetValue(item.Attribute("EntityType").Value, out Entity entity))
+                {
+                    string name = item.Attribute("Name").Value;
+                    if (Model.EntitySets.ContainsKey(name) == false)
+                    {
+                        Model.EntitySets.Add(
+                            key: name,
+                            value: new EntitySet(
+                                name: name,
+                                entity: entity));
+                    }
+                    
+                }
             }
         }
 
@@ -119,39 +170,17 @@ namespace ODataViewer
             }
         }
 
-        private void BuildEntities()
+        private void BuildEntitySetsEntities()
         {
-            
-
-            IEnumerable<XElement> items = XmlDoc.Root.Descendants(EDMNS + "EntitySet");
-            //
-
-            foreach (XElement schema in XmlDoc.Root.Descendants(EDMNS + "Schema"))
+            foreach (EntitySet entitySet in Model.EntitySets.Values)
             {
-                string ns = schema.Attribute("Namespace").Value;
-                foreach (XElement et in schema.Descendants(EDMNS + "EntityType"))
-                {
-                    EntityTypes.Add(ns + "." + et.Attribute("Name").Value, et);
-                }
+                XElement xe = entityTypes[entitySet.NameType];
+                XElement se = entitySets[entitySet.Name];
 
-                foreach (XElement et in XmlDoc.Root.Descendants(EDMNS + "EntitySet"))
-                {
-                    if (EntitySets.ContainsKey(et.Attribute("Name").Value) == false)
-                    {
-                        EntitySets.Add(et.Attribute("Name").Value, et);
-                    }
-                }
-            }
-
-            foreach (EntitySet item in Model.EntitySets.Values)
-            {
-                XElement xe = EntityTypes[item.NameType];
-                XElement se = EntitySets[item.Name];
-
-                BuildEntityKeys(item.Entity, xe);
-                BuildEntityProperties(item.Entity, xe);
+                BuildEntityKeys(entitySet.Entity, xe);
+                BuildEntityProperties(entitySet.Entity, xe);
                 BuildEntityNavigationProperties(
-                    entitySet: item,
+                    entitySet: entitySet,
                     xSetElement: se,
                     xElement: xe);
             }
