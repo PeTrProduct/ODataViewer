@@ -395,6 +395,8 @@ namespace ODataViewer
             intellisenseWPFControl.Start(MetaData);
             txbQuery.TextChanged += new System.EventHandler(txbQuery_TextChanged);
 
+            txbQuery.Clear();
+
             DrawGraph();
         }
 
@@ -443,7 +445,10 @@ namespace ODataViewer
 
             string metadata = string.Format("{0}/$metadata", ServicePath);
 
+            dataGridView1.Columns.Clear();
+            
             webBrowser.Navigate(metadata);
+            
 
             MetaData = new MetaData(metadata);
             MetaData.ReadCompleted += new EventHandler(MetaData_ReadCompleted);

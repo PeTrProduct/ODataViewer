@@ -19,6 +19,9 @@ namespace ODataViewer
         private readonly WebClient proxy;
         private XDocument XmlDoc;
 
+        private readonly Dictionary<string, XElement> EntityTypes = new Dictionary<string, XElement>();
+        private readonly Dictionary<string, XElement> EntitySets = new Dictionary<string, XElement>();
+
         public event EventHandler ReadCompleted;
 
         public EntityContainer Model { get; }
@@ -69,6 +72,13 @@ namespace ODataViewer
             }
 
             BuildEntitySets();
+            BuildAssociationSet();
+            BuildEntities();
+
+            if (ReadCompleted != null)
+            {
+                ReadCompleted(this, EventArgs.Empty);
+            }
         }
 
         private void BuildEntitySets()
@@ -81,8 +91,6 @@ namespace ODataViewer
                         name: item.Attribute("Name").Value,
                         entityType: item.Attribute("EntityType").Value));
             }
-            BuildAssociationSet();
-            BuildEntities();
         }
 
         private void BuildAssociationSet()
@@ -113,8 +121,7 @@ namespace ODataViewer
 
         private void BuildEntities()
         {
-            Dictionary<string, XElement> EntityTypes = new Dictionary<string, XElement>();
-            Dictionary<string, XElement> EntitySets = new Dictionary<string, XElement>();
+            
 
             IEnumerable<XElement> items = XmlDoc.Root.Descendants(EDMNS + "EntitySet");
             //
@@ -147,11 +154,6 @@ namespace ODataViewer
                     entitySet: item,
                     xSetElement: se,
                     xElement: xe);
-            }
-
-            if (ReadCompleted != null)
-            {
-                ReadCompleted(this, EventArgs.Empty);
             }
         }
 
