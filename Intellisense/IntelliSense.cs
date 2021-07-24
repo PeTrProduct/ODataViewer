@@ -184,6 +184,8 @@ namespace ODataViewer
                     {
                         result.Insert(0, new IntellisenseItem("/", DSType.End));
                         result.Insert(0, new IntellisenseItem("?", DSType.End));
+                        result.Insert(0, new IntellisenseItem("&", DSType.End));
+                        result.Insert(0, new IntellisenseItem(",", DSType.End));
                     }
                     else
                     {
@@ -382,6 +384,12 @@ namespace ODataViewer
             #region Init Fields
             exp = exp.TrimStart();
 
+            List<string> groups = exp.Split(new[] { " and ", " or ", " not " }, StringSplitOptions.None).ToList();
+            if (groups.Count > 0)
+            {
+                exp = groups.Last();
+            }
+
             if (exp.IndexOf(" ") == -1)
             {
                 leftExp = exp;
@@ -433,7 +441,17 @@ namespace ODataViewer
                 return result.ToArray();
             }
 
-            // The operation
+            // The group operators (and/or/not)
+            if (!string.IsNullOrEmpty(leftExp)
+                && !string.IsNullOrEmpty(op)
+                && !string.IsNullOrEmpty(rightExp)
+                && exp.EndsWith(" ")
+                )
+            {
+              return Expression.LogicalGroupOperators;
+            }
+
+            // The operations (eq/ne/gt/gteq/lt/lteq)
             if (string.IsNullOrEmpty(op) && exp.EndsWith(" "))
             {
                 return Expression.LogicalOperators;
