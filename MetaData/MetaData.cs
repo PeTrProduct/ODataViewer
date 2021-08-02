@@ -186,22 +186,24 @@ namespace ODataViewer
             }
         }
 
-        private void BuildEntityProperties(Entity e, XElement xe)
+        private void BuildEntityProperties(Entity entity, XElement xe)
         {
             foreach (XElement prop in xe.Elements(EDMNS + "Property"))
             {
-                Property p = new Property
+                if (!entity.Properties.ContainsKey(prop.Attribute("Name").Value))
                 {
-                    Name = prop.Attribute("Name").Value,
-                    NameType = prop.Attribute("Type").Value,
-                    Nullable = bool.Parse(prop.Attribute("Nullable")?.Value ?? "true")
-                };
-                //p.MaxLength   = int.Parse(prop.Attribute("MaxLength").Value);
-                //p.FixedLength = bool.Parse(prop.Attribute("FixedLength").Value);
-                //p.Unicode     = bool.Parse(prop.Attribute("Unicode").Value);
+                    Property p = new Property
+                    {
+                        Name = prop.Attribute("Name").Value,
+                        NameType = prop.Attribute("Type").Value,
+                        Nullable = bool.Parse(prop.Attribute("Nullable")?.Value ?? "true")
+                    };
+                    //p.MaxLength   = int.Parse(prop.Attribute("MaxLength").Value);
+                    //p.FixedLength = bool.Parse(prop.Attribute("FixedLength").Value);
+                    //p.Unicode     = bool.Parse(prop.Attribute("Unicode").Value);
 
-
-                e.Properties.Add(p.Name, p);
+                    entity.Properties.Add(p.Name, p);
+                }
             }
         }
 
@@ -216,7 +218,10 @@ namespace ODataViewer
 
             foreach (XElement key in keys.Elements(EDMNS + "PropertyRef"))
             {
-                e.Keys.Add(key.Attribute("Name").Value, key.Attribute("Name").Value);
+                if (!e.Keys.ContainsKey(key.Attribute("Name").Value))
+                {
+                    e.Keys.Add(key.Attribute("Name").Value, key.Attribute("Name").Value);
+                }  
             }
         }
 
@@ -253,8 +258,11 @@ namespace ODataViewer
                 }
                 else
                 {
-                    entity.NavigationProperties.Add(
-                        navi.Attribute("Name").Value, null);
+                    if (!entity.NavigationProperties.ContainsKey(navi.Attribute("Name").Value))
+                    {
+                        entity.NavigationProperties.Add(navi.Attribute("Name").Value, null);
+                    }
+                    
                 }
 
                 //if ( model.EntitySets.ContainsKey( ToRole ) )
