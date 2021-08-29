@@ -451,7 +451,7 @@ namespace ODataViewer
               return Expression.LogicalGroupOperators;
             }
 
-            // The operations (eq/ne/gt/gteq/lt/lteq)
+            // The operations (eq/ne/gt/ge/lt/le)
             if (string.IsNullOrEmpty(op) && exp.EndsWith(" "))
             {
                 return Expression.LogicalOperators;

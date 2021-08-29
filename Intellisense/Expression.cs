@@ -15,9 +15,9 @@ namespace ODataViewer
                 new IntellisenseItem("eq", DSType.Operation, "Equal\n Example: /Customers?filter=City eq 'London'" ),
                 new IntellisenseItem("ne", DSType.Operation, "Not Equal\n Example: /Customers?filter=City ne 'London'"),
                 new IntellisenseItem("gt", DSType.Operation, "Greater than\n Example: /Product?$filter=UnitPrice gt 20"),
-                new IntellisenseItem("gteq", DSType.Operation, "Greater than or equal\n Example: /Orders?$filter=Freight gteq 800"),
+                new IntellisenseItem("ge", DSType.Operation, "Greater than or equal\n Example: /Orders?$filter=Freight ge 800"),
                 new IntellisenseItem("lt", DSType.Operation, "Less than\n Example: /Orders?$filter=Freight lt 1"),
-                new IntellisenseItem("lteq", DSType.Operation, "Less than or equal\n Example: /Product?$filter=UnitPrice lteq 20")
+                new IntellisenseItem("le", DSType.Operation, "Less than or equal\n Example: /Product?$filter=UnitPrice le 20")
             };
 
         public static IntellisenseItem[] LogicalGroupOperators =
