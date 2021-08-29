@@ -8,9 +8,9 @@ namespace E4D
         public About()
         {
             InitializeComponent();
-            Text = string.Format("About {0} {0}", AssemblyTitle);
+            Text = $"About {AssemblyTitle} {AssemblyTitle}";
             labelProductName.Text = AssemblyProduct;
-            labelVersion.Text = string.Format("Version {0} {0}", AssemblyVersion);
+            labelVersion.Text = $"Version {AssemblyVersion} {AssemblyVersion}";
             labelCopyright.Text = AssemblyCopyright;
             labelCompanyName.Text = AssemblyCompany;
             textBoxDescription.Text = AssemblyDescription;
@@ -26,7 +26,7 @@ namespace E4D
                 if (attributes.Length > 0)
                 {
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "")
+                    if (string.IsNullOrEmpty(titleAttribute.Title) == false)
                     {
                         return titleAttribute.Title;
                     }

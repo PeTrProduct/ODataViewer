@@ -84,6 +84,7 @@ namespace ODataViewer
                 }
             }
         }
+
         public string GetSelectedIntelliSense()
         {
             string intellisens = string.Empty;
@@ -98,7 +99,7 @@ namespace ODataViewer
             int strS = url.LastIndexOf('/');
             int strQ = url.LastIndexOf('?');
             int strE = url.LastIndexOf('=');
-            int spac = url.LastIndexOf(" ");
+            int spac = url.LastIndexOf(' ');
             int spad = url.LastIndexOf(',');
             int sep = url.LastIndexOf('&');
 
@@ -108,7 +109,7 @@ namespace ODataViewer
                 if (sep < spac)
                 {
                     sep = spac;
-                    if (url.EndsWith("= "))
+                    if (url.EndsWith("= ", StringComparison.Ordinal))
                     {
                         sep--;
                     }
@@ -170,9 +171,8 @@ namespace ODataViewer
 
         private void ShowTooTip()
         {
-            Point location = new Point(Width + 5, 50);
-            IntellisenseItem item = lbItellisense.SelectedItem as IntellisenseItem;
-            if (item == null)
+            //Point location = new Point(Width + 5, 50);
+            if (!(lbItellisense.SelectedItem is IntellisenseItem item))
             {
                 return;
             }

@@ -1,6 +1,6 @@
 ﻿namespace ODataViewer
 {
-    public class Property : EDMElement
+    public class EDMProperty : EDMElement
     {
         public bool Nullable { get; set; }
         public int MaxLength { get; set; }

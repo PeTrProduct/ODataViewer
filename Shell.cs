@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -102,18 +103,18 @@ namespace ODataViewer
         {
             get
             {
-                if (ServicePath.EndsWith("/"))
+                if (ServicePath.EndsWith("/", StringComparison.Ordinal))
                 {
                     ServicePath = ServicePath.Substring(0, ServicePath.Length - 1);
                 }
 
-                return string.Format("{0}/{1}", ServicePath, txbQuery.Text);
+                return $"{ServicePath}/{txbQuery.Text}";
             }
         }
 
         private void txbQuery_TextChanged(object sender, EventArgs e)
         {
-            tslbl.Text = string.Format("{0}/{1}", ServicePath, txbQuery.Text);
+            tslbl.Text = $"{ServicePath}/{txbQuery.Text}";
 
             ShowIntellisense();
         }
@@ -199,7 +200,10 @@ namespace ODataViewer
 
         private DataTable PopulateDataTableFromText(string content)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = new DataTable
+            {
+                Locale = CultureInfo.InvariantCulture
+            };
             string column_name = "Plain Text";
             dt.Columns.Add(column_name);
             DataRow workRow = dt.NewRow();
@@ -210,7 +214,10 @@ namespace ODataViewer
 
         private DataTable PopulateDataTableFromJSON(string content)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = new DataTable
+            {
+                Locale = CultureInfo.InvariantCulture
+            };
 
             JsonDocument result = JsonDocument.Parse(content);
             JsonElement root = result.RootElement;
@@ -340,7 +347,10 @@ namespace ODataViewer
 
         private DataTable PopulateDataTableFromXML(XElement xe)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = new DataTable
+            {
+                Locale = CultureInfo.InvariantCulture
+            };
 
             IEnumerable<XElement> rows;
             if (xe.Elements(ATOM + "entry").Count() > 0)
@@ -443,7 +453,7 @@ namespace ODataViewer
             Show();
 
 
-            string metadata = string.Format("{0}/$metadata", ServicePath);
+            string metadata = $"{ServicePath}/$metadata";
 
             dataGridView1.Columns.Clear();
             
@@ -537,12 +547,13 @@ namespace ODataViewer
 
         private void tab_Changed(object sender, EventArgs e)
         {
-            if ((sender as System.Windows.Forms.TabControl).SelectedTab.Name == tabGraph.Name
+            string name = ((TabControl)sender).SelectedTab.Name;
+            if (name == tabGraph.Name
                 && graph is null)
             {
                 DrawGraph();
             }
-            else if((sender as System.Windows.Forms.TabControl).SelectedTab.Name == QureyResulttabPage.Name)
+            else if (name == QureyResulttabPage.Name)
             {
                 QureyWebBrowser.Navigate(FullPath);
             }
@@ -558,7 +569,8 @@ namespace ODataViewer
 
             foreach (KeyValuePair<string, EntitySet> kvp in MetaData.Model.EntitySets)
             {
-                Microsoft.Msagl.Drawing.Node node = graph.AddNode(kvp.Key);
+                _ = graph.AddNode(kvp.Key);
+                //Microsoft.Msagl.Drawing.Node node = graph.AddNode(kvp.Key);
                 //node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
             }
 

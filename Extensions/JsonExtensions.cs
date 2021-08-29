@@ -9,9 +9,9 @@ namespace ODataViewer
     {
         public static IEnumerable<JsonElement> DescendantPropertyValues(this JsonElement element, string name, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (name == null)
+            if (name is null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(name));
             }
 
             return DescendantPropertyValues(element, n => name.Equals(n, comparison));
@@ -19,9 +19,9 @@ namespace ODataViewer
 
         public static IEnumerable<JsonElement> DescendantPropertyValues(this JsonElement element, Predicate<string> match)
         {
-            if (match == null)
+            if (match is null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(match));
             }
 
             IEnumerable<JsonElement> query = RecursiveEnumerableExtensions.Traverse(

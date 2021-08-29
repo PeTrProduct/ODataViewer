@@ -539,7 +539,7 @@ namespace ODataViewer
             this.newToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripButton.Name = "newToolStripButton";
             this.newToolStripButton.Size = new System.Drawing.Size(116, 25);
-            this.newToolStripButton.Text = "&New Service";
+            this.newToolStripButton.Text = "&Open Service";
             this.newToolStripButton.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // copyToolStripButton

@@ -38,11 +38,11 @@ namespace ODataViewer
             Model = new EntityContainer();
 
             proxy.OpenReadAsync(ServiceUri);
-            proxy.OpenReadCompleted += new OpenReadCompletedEventHandler(proxy_OpenReadCompleted);
+            proxy.OpenReadCompleted += new OpenReadCompletedEventHandler(Proxy_OpenReadCompleted);
             //LoadModel();
         }
 
-        private void proxy_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
+        private void Proxy_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
         {
             //try
             //{
@@ -98,17 +98,14 @@ namespace ODataViewer
             BuildAssociationSet();
             BuildEntitySetsEntities();
 
-            if (ReadCompleted != null)
-            {
-                ReadCompleted(this, EventArgs.Empty);
-            }
+            ReadCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         private void BuildEntities()
         {
             foreach (KeyValuePair<string, XElement> kvp in entityTypes)
             {
-                var item = kvp.Value;
+                XElement item = kvp.Value;
                 string name = item.Attribute("Name").Value;
                 string entityType = kvp.Key; //item.Attribute("EntityType")?.Value;
                 string baseType = item.Attribute("BaseType")?.Value;
@@ -192,7 +189,7 @@ namespace ODataViewer
             {
                 if (!entity.Properties.ContainsKey(prop.Attribute("Name").Value))
                 {
-                    Property p = new Property
+                    EDMProperty p = new EDMProperty
                     {
                         Name = prop.Attribute("Name").Value,
                         NameType = prop.Attribute("Type").Value,
@@ -234,8 +231,8 @@ namespace ODataViewer
             string Relationship;
             string KeyNav;
 
-            string Target;
-            string Path;
+            //string Target;
+            //string Path;
 
             string elementName = xElement.Attribute("Name").Value;
 

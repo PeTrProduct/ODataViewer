@@ -166,7 +166,7 @@
     <Compile Include="MetaData\EntitySet.cs" />
     <Compile Include="MetaData\EntitySource.cs" />
     <Compile Include="MetaData\MetaData.cs" />
-    <Compile Include="MetaData\Property.cs" />
+    <Compile Include="MetaData\EDMProperty.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\About.resx">

@@ -9,7 +9,7 @@ namespace ODataViewer
     public class IntelliSense
     {
         #region Fields
-        private readonly EntitySource EntitySource;
+        //private readonly EntitySource EntitySource;
         private readonly MetaData Model;
 
         #endregion
@@ -33,7 +33,7 @@ namespace ODataViewer
             }
 
             if ((result == null || result.Length == 0) &&
-                 !prefixUri.EndsWith("/"))
+                 !prefixUri.EndsWith("/", StringComparison.Ordinal))
             {
                 if (prefixUri.IndexOf('?') == -1)
                 {
@@ -67,7 +67,7 @@ namespace ODataViewer
 
             #region Entity(Key)/ Property | NavigationProperties
 
-            if (prefix.Trim().EndsWith(")/") || resources[resIndexLast - 1].EndsWith(")"))
+            if (prefix.Trim().EndsWith(")/", StringComparison.Ordinal) || resources[resIndexLast - 1].EndsWith(")", StringComparison.Ordinal))
             {
                 Entity et = EntityIntellisense(resources[resIndexLast - 1]);
                 if (et != null)
@@ -86,7 +86,7 @@ namespace ODataViewer
 
             if (resources.Length >= 3)
             {
-                if (resIndexLast >= 2 && resources[resIndexLast - 2].EndsWith(")"))
+                if (resIndexLast >= 2 && resources[resIndexLast - 2].EndsWith(")", StringComparison.Ordinal))
                 {
                     Entity et = EntityIntellisense(resources[resIndexLast - 2]);
                     if (et != null && et.Properties.ContainsKey(resources[resIndexLast - 1]))
@@ -105,7 +105,7 @@ namespace ODataViewer
         {
             List<IntellisenseItem> result = new List<IntellisenseItem>();
 
-            if (prefix.StartsWith("$") || string.IsNullOrEmpty(prefix))
+            if (prefix.StartsWith("$", StringComparison.Ordinal) || string.IsNullOrEmpty(prefix))
             {
                 result.Add(
                     new IntellisenseItem
@@ -120,7 +120,7 @@ namespace ODataViewer
             {
                 if (item.Name.StartsWith(prefix, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    if (item.Name == prefix && !prefix.EndsWith("/"))
+                    if (item.Name == prefix && !prefix.EndsWith("/", StringComparison.Ordinal))
                     {
                         result.Add(new IntellisenseItem("(", DSType.End));
                         result.Add(new IntellisenseItem("/", DSType.End));
@@ -322,11 +322,11 @@ namespace ODataViewer
             if (IsEntitySet && "$orderby=".StartsWith(lastOperation, StringComparison.CurrentCultureIgnoreCase))
             {
 
-                if (lastExp.Trim().StartsWith("$orderby="))
+                if (lastExp.Trim().StartsWith("$orderby=", StringComparison.OrdinalIgnoreCase))
                 {
                     string prop = lastExp.Split('=').Last();
 
-                    if (et.Properties.ContainsKey(prop.Trim()) && prop.EndsWith(" "))
+                    if (et.Properties.ContainsKey(prop.Trim()) && prop.EndsWith(" ", StringComparison.Ordinal))
                     {
                         result.Add(new IntellisenseItem("desc", DSType.Operation, "Sort the results by the criteria given in this value."));
                     }
@@ -344,7 +344,7 @@ namespace ODataViewer
             if (IsEntitySet && "$select=".StartsWith(lastOperation, StringComparison.CurrentCultureIgnoreCase))
             {
 
-                if (lastExp.Trim().StartsWith("$select="))
+                if (lastExp.Trim().StartsWith("$select=", StringComparison.OrdinalIgnoreCase))
                 {
                     result.AddRange(PropertiesIntellisense(et, lastExp.Split('=',',').Last()));
                 }
@@ -390,7 +390,7 @@ namespace ODataViewer
                 exp = groups.Last();
             }
 
-            if (exp.IndexOf(" ") == -1)
+            if (exp.IndexOf(" ", StringComparison.Ordinal) == -1)
             {
                 leftExp = exp;
                 op = string.Empty;
@@ -398,10 +398,10 @@ namespace ODataViewer
             }
             else
             {
-                leftExp = exp.Substring(0, exp.IndexOf(" "));
-                if (exp.IndexOf(" ", leftExp.Length + 1) != -1)
+                leftExp = exp.Substring(0, exp.IndexOf(" ", StringComparison.Ordinal));
+                if (exp.IndexOf(" ", leftExp.Length + 1, StringComparison.Ordinal) != -1)
                 {
-                    int lengthOp = exp.IndexOf(" ", leftExp.Length + 1) - leftExp.Length + 1;
+                    int lengthOp = exp.IndexOf(" ", leftExp.Length + 1, StringComparison.Ordinal) - leftExp.Length + 1;
                     op = exp.Substring(leftExp.Length, lengthOp);
 
                     if (op.Length >= 2)
@@ -418,7 +418,7 @@ namespace ODataViewer
             string[] tokens = exp.Split(' ');
 
             // Left side of expression
-            if (string.IsNullOrEmpty(op) && !exp.EndsWith(" "))
+            if (string.IsNullOrEmpty(op) && !exp.EndsWith(" ", StringComparison.Ordinal))
             {
                 List<IntellisenseItem> result = new List<IntellisenseItem>();
 
@@ -445,20 +445,20 @@ namespace ODataViewer
             if (!string.IsNullOrEmpty(leftExp)
                 && !string.IsNullOrEmpty(op)
                 && !string.IsNullOrEmpty(rightExp)
-                && exp.EndsWith(" ")
+                && exp.EndsWith(" ", StringComparison.Ordinal)
                 )
             {
               return Expression.LogicalGroupOperators;
             }
 
             // The operations (eq/ne/gt/ge/lt/le)
-            if (string.IsNullOrEmpty(op) && exp.EndsWith(" "))
+            if (string.IsNullOrEmpty(op) && exp.EndsWith(" ", StringComparison.Ordinal))
             {
                 return Expression.LogicalOperators;
             }
 
             // Right side of expression
-            if (!string.IsNullOrEmpty(op) && exp.EndsWith(" "))
+            if (!string.IsNullOrEmpty(op) && exp.EndsWith(" ", StringComparison.Ordinal))
             {
                 string type = null;
                 // Field
@@ -510,8 +510,7 @@ namespace ODataViewer
         private string BuildPropertyToolTip(Entity et, string property)
         {
             return
-                string.Format("This item is property of {0} Entity.\n{1} type of {2}. ",
-                                et.Name, property, et.Properties[property].NameType.Split('.').Last());
+                $"This item is property of {et.Name} Entity.\n{property} type of {et.Properties[property].NameType.Split('.').Last()}. ";
         }
         #endregion
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 
 namespace ODataViewer
@@ -101,25 +102,21 @@ namespace ODataViewer
 
         public static List<IntellisenseItem> Funcs(string type)
         {
-            if (funcs.ContainsKey(type))
-            {
-                return funcs[type];
-            }
-
-            return new List<IntellisenseItem>();
+            return funcs.TryGetValue(type, out List<IntellisenseItem> value) ? value : new List<IntellisenseItem>();
         }
-        public static List<string> FuncsToolTip(string f)
-        {
-            if (funcsToolTip.ContainsKey(f))
-            {
-                return funcsToolTip[f];
-            }
 
-            return new List<string>();
+        public static List<string> FuncsToolTip(string func)
+        {
+            return funcsToolTip.TryGetValue(func, out List<string> value) ? value : new List<string>();
         }
 
         public static BitmapSource ToBitmapSource(this System.Drawing.Bitmap bitmap)
         {
+            if (bitmap is null)
+            {
+                throw new ArgumentNullException(nameof(bitmap));
+            }
+
             using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {
                 bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
