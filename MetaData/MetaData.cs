@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
+using System.Text;
 using System.Windows;
 using System.Xml.Linq;
 
@@ -26,13 +28,37 @@ namespace ODataViewer
 
         public EntityContainer Model { get; }
 
-        public MetaData(string ServiceUrl)
+        public MetaData(string ServiceUrl, string UserName, string UserPassword)
         {
             ServiceUri = new Uri(ServiceUrl);
-            proxy = new WebClient
+            proxy = new WebClient();
+
+            if (UserName != null && UserName != string.Empty)
             {
-                UseDefaultCredentials = true
-            };
+                proxy.UseDefaultCredentials = false;
+
+                NetworkCredential networkCredential = new NetworkCredential(UserName, UserPassword);
+                proxy.Credentials = networkCredential;
+                
+                string host = new Uri(ServiceUrl).GetLeftPart(UriPartial.Authority);
+
+                CredentialCache myCredentialCache = new CredentialCache
+                {
+                    {
+                        new Uri(host),
+                        "Basic",
+                        networkCredential
+                    }
+                };
+                //proxy.PreAuthenticate = true;
+                proxy.Credentials = myCredentialCache;
+            }
+            else
+            {
+                proxy.UseDefaultCredentials = true;
+            }
+            
+
             proxy.Headers.Add("Content-Type", "application/xml, application/atom+xml, application/json");
             XmlDoc = new XDocument();
             Model = new EntityContainer();
@@ -243,7 +269,7 @@ namespace ODataViewer
                 ToRole = navi.Attribute("ToRole")?.Value;
                 Relationship = navi.Attribute("Relationship")?.Value; //.Split('.').Last();
 
-                if (!string.IsNullOrEmpty(Relationship) && !string.IsNullOrEmpty(ToRole) && !string.IsNullOrEmpty(FromRole))
+                if (!string.IsNullOrEmpty(Relationship) && !string.IsNullOrEmpty(ToRole) && !string.IsNullOrEmpty(FromRole) && Model.AssociationSet.ContainsKey(Relationship))
                 {
                     Association ass = Model.AssociationSet[Relationship];
 

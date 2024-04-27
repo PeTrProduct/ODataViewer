@@ -23,20 +23,16 @@ namespace ODataViewer
         private TreeNode NodeSelected;
         private MetaData MetaData;
         private string ServicePath;
+        private string userName = "";
+        private string userPassword = "";
         private readonly DataServiceConfigForm dscf;
-        private readonly WebClient client;
         private readonly HttpClient httpClient;
         #endregion
 
         public Shell()
         {
             InitializeComponent();
-            client = new WebClient()
-            {
-                UseDefaultCredentials = true
-            };
-            client.Headers.Add("Content-Type", "application/xml, application/atom+xml, application/json");
-
+            
             httpClient = new HttpClient();
 
 
@@ -450,17 +446,20 @@ namespace ODataViewer
                 ServicePath = ServicePath.Substring(0, ServicePath.Length - 1);
             }
 
+            userName = dscf.UserName;
+            userPassword = dscf.UserPassword;
+
             Show();
 
 
-            string metadata = $"{ServicePath}/$metadata";
+            string metadata_url = $"{ServicePath}/$metadata";
 
             dataGridView1.Columns.Clear();
             
-            webBrowser.Navigate(metadata);
+            webBrowser.Navigate(metadata_url);
             
 
-            MetaData = new MetaData(metadata);
+            MetaData = new MetaData(metadata_url, userName, userPassword);
             MetaData.ReadCompleted += new EventHandler(MetaData_ReadCompleted);
         }
 
